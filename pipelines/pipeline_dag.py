@@ -2,6 +2,7 @@ from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.utils.dates import days_ago
 from datetime import datetime, timedelta
+from airflow.sensors.time_delta import TimeDeltaSensor
 
 # Define DAG default arguments
 default_args = {
@@ -30,7 +31,8 @@ with DAG(
 
     wait_for_last_monday = TimeDeltaSensor(
         task_id="wait_for_last_monday",
-        python_callable=is_last_monday,
+        delta=timedelta(seconds=1),  # Ensures execution on last monday
+        mode='poke'
     )
 
     download_raw_data = BashOperator(
